@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Útiles</title>
+    <!-- Bootstrap 5 CSS-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <div class="container"  id="lista-compras">
+        
+        <div class="row">
+            <div class="header">
+                <h1>{{ header ? header : 'Bienvenido' }}</h1>
+                <button v-if="estado === 'default'" class="btn btn-primary btn-lg btn-block" @click="cambiarEstado('edit')">Agregar elementos a la lista</button>
+                <button v-else class="btn btn-secondary" @click="cambiarEstado('default')">Cancelar</button>
+            </div>
+            <div v-if="estado === 'edit'" class="col-6">
+                <input  class="form-control" type="text" placeholder="Agregar nuevo" v-model="newUtil" @keyup.enter="guardarElemento">
+            </div>
+            <div v-if="estado === 'edit'" class="col-6">
+                <!-- 
+                    con en el bind, desabilitamos el botón guardar, hasta que ingrese un caracter
+                    se puede usar v-bind ó :
+                -->
+                <button class="btn btn-primary btn-block" :disabled="newUtil.length === 0"  @click="guardarElemento">Guardar</button>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col">
+                <ul class="list-group">
+                    <li class="list-group-item"  
+                        v-for="elemento in listarReversa"
+                        :class="{tachado : elemento.comprado }"
+                        @click="cambiarEstadoCompra(elemento)"
+                        > {{ elemento.util }} </li>
+                    <div v-if="utiles.length === 0" class="alert alert-danger" role="alert">
+                        No existe elementos en la lista!
+                      </div>
+                </ul>
+            </div>
+        </div>
+    
+    
+    
+    </div>
+
+
+    <!-- VueJS -->
+
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <!-- production version, optimized for size and speed -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+
+    <script>
+        var app = new Vue({
+            el:'#lista-compras',
+            data: {
+                header: 'Listado de Útiles',
+                newUtil:'',
+                estado: 'default',
+                utiles: [
+                    {
+                        util:'10 Cuadernos',
+                        comprado: true
+                        },
+                    {
+                        util:'15 Lápices',
+                        comprado: true
+                        },
+                    {
+                        util:'5 Cajas de colores',
+                        comprado: false
+                        }
+                ]
+            },
+            computed:{
+                listarReversa:function(){
+                    return this.utiles.slice(0).reverse();
+                }
+            },
+            methods:{
+                guardarElemento:function(){
+                    this.utiles.push({ util: this.newUtil, comprado: false });                   
+                    this.newUtil = '';     
+                },
+                cambiarEstado:function(newEstado){
+                    this.estado = newEstado;
+                    this.newUtil = '';
+                },
+                cambiarEstadoCompra:function(util){
+                    util.comprado = !util.comprado;
+                }
+            }
+        });
+    </script>
+
+    <!-- Optional JavaScript -->
+    <!-- Popper.js first, then Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+</body>
+</html>
